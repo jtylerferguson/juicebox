@@ -1,7 +1,8 @@
 const {
   client,
   getAllUsers,
-  createUser
+  createUser,
+  updateUser
 } = require('./index');
 
 async function createInitialUsers() {
@@ -10,7 +11,7 @@ async function createInitialUsers() {
     console.log("Starting to create users...");
 
     const albert = await createUser({ username: 'albert', password: 'bertie99', name:'Al Bert', location: 'Sidney, Australia' });
-    const sandra = await createUser({ username: 'sandra', password: '2sandy4me', name:'Just Sandra', location: " Ain't tellin'" });
+    const sandra = await createUser({ username: 'sandra', password: '2sandy4me', name:'Just Sandra', location: "Ain't tellin'" });
     const glamgal = await createUser({ username: 'glamgal', password: 'soglam', name:'Joshua', location: 'Upper East Side' });
     
 
@@ -81,6 +82,13 @@ async function testDB() {
 
     const users = await getAllUsers();
     console.log("getAllUsers:", users);
+
+    console.log("Calling updateUser on users[0]")
+    const updateUserResult = await updateUser(users[0].id, {
+      name: "Newname Sogood",
+      location: "Lesterville, KY"
+    });
+    console.log("Result:", updateUserResult);
 
     console.log("Finished database tests!");
   } catch (error) {
