@@ -2,7 +2,8 @@ const {
   client,
   getAllUsers,
   createUser,
-  updateUser
+  updateUser,
+  getUserById
 } = require('./index');
 
 async function createInitialUsers() {
@@ -59,6 +60,16 @@ async function createTables() {
       );
     `);
 
+    await client.query(`
+    CREATE TABLE posts (
+      id SERIAL PRIMARY KEY,
+      "authorId" INTEGER REFERENCES users(id),
+      title varchar(255) NOT NULL,
+      content TEXT NOT NULL,
+      active BOOLEAN DEFAULT true
+    );
+    `)
+
     console.log("Finished building tables!");
   } catch (error) {
     console.error("Error building tables!");
@@ -91,6 +102,10 @@ async function testDB() {
       location: "Lesterville, KY"
     });
     console.log("Result:", updateUserResult);
+  
+    console.log("Calling getUserById")
+    const userById = await getUserById(3)
+    console.log("Result of getUserById", userById)
 
     console.log("Finished database tests!");
   } catch (error) {

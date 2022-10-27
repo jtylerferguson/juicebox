@@ -38,26 +38,7 @@ async function getAllUsers() {
   }
 
 
-//   async function getUserById(userId){
-    
-    
-//     const { rows: [user] } = await client.query(`
-//     SELECT id, username,
-//     FROM users;
-//   `)
 
-//     if (rows.length === 0){return null}
-//     else {
-
-//      const user= await client.query(`
-//      DELETE password, 
-//      ${getPostsByUser},
-//      UPDATE posts,
-//      SET 
-//      `)
-    
-// return user
-//   }
   async function createUser({ 
     username, 
     password, 
@@ -120,7 +101,7 @@ async function getAllUsers() {
         WHERE id=${id}
         RETURNING *;
       `, Object.values(fields));
-      console.log(user)
+
       return user;
     } catch (error) {
       throw error;
@@ -146,12 +127,28 @@ async function getAllUsers() {
           WHERE id=${id}
           RETURNING *;
         `, Object.values(fields));
-        console.log("this is the rows log", )
         return post;
     } catch (error) {
       throw error;
     }
   }
+
+  async function getUserById(userId) {
+
+ const { rows: [user] } = await client.query(
+      `SELECT * FROM users 
+      WHERE "id"=${ userId };
+    `);
+    if (!user){
+      return null;
+    }
+    delete user.password
+    console.log("!!")
+    user.posts =  await getPostsByUser(userId)
+    console.log("??")
+    return user;
+  }
+
   
   // and export them
   module.exports = {
@@ -162,7 +159,8 @@ async function getAllUsers() {
     createPost,
     updatePost,
     getAllPosts,
-    getPostsByUser
+    getPostsByUser,
+    getUserById
   }
 
   
