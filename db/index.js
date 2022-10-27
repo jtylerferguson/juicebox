@@ -12,16 +12,12 @@ async function getAllUsers() {
   }
 
   async function getAllPosts() {
-    try {const { rows } = await client.query(
+   const { rows } = await client.query(
         `SELECT id, title
         FROM posts;
       `);
-    
-      return rows;
   
-    } catch (error) {
-      throw error;
-    }
+      return rows;
   }
  
   async function getPostsByUser(userId) {
@@ -69,7 +65,6 @@ async function getAllUsers() {
         const { rows: [ user ] } = await client.query(`
         INSERT INTO posts("authorId", title, content)
         VALUES ($1, $2, $3)
-        ON CONFLICT (username) DO NOTHING 
         RETURNING *;
       `, [authorId, title, content]);
     
@@ -143,9 +138,8 @@ async function getAllUsers() {
       return null;
     }
     delete user.password
-    console.log("!!")
+   
     user.posts =  await getPostsByUser(userId)
-    console.log("??")
     return user;
   }
 
