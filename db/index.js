@@ -4,7 +4,7 @@ const client = new Client('postgres://localhost:5432/juicebox-dev');
 
 async function getAllUsers() {
     const { rows } = await client.query(
-      `SELECT id, username 
+      `SELECT id, username, name, location, active  
       FROM users;
     `);
   
@@ -62,20 +62,59 @@ async function getAllUsers() {
     content
   }) {
     try {
-        const { rows: [ user ] } = await client.query(`
+        const { rows: [ post ] } = await client.query(`
         INSERT INTO posts("authorId", title, content)
         VALUES ($1, $2, $3)
         RETURNING *;
       `, [authorId, title, content]);
     
     
-        return user;
+        return post;
   
     } catch (error) {
       throw error;
     }
   }
 
+  async function createTags(tagList) {
+    if (tagList.length === 0) { 
+      return; 
+    }
+  
+    // need something like: $1), ($2), ($3 
+    const insertValues = tagList.map(
+      (_, index) => `$${index + 1}`).join('), (');
+    // then we can use: (${ insertValues }) in our string template
+  
+    // need something like $1, $2, $3
+    const selectValues = tagList.map(
+      (_, index) => `$${index + 1}`).join(', ');
+    // then we can use (${ selectValues }) in our string template
+  
+    try {
+      // insert the tags, doing nothing on conflict
+      // returning nothing, we'll query after
+  await client.query(`
+  INSERT INTO tags(name),
+VALUES (${insertValues}),
+ON CONFLICT (name) DO NOTHING;
+  `, tagList)
+
+ 
+   
+  // select all tags where the name is in our taglist
+      // return the rows from the query
+
+     const {rows}= await client.query(`
+      SELECT * FROM tags
+      WHERE name
+      IN (${selectValues});`, tagList)
+        return rows
+
+    } catch (error) {
+      throw error;
+    }
+  }
   async function updateUser(id, fields = {}) {
     // build the set string
     const setString = Object.keys(fields).map(
@@ -131,7 +170,8 @@ async function getAllUsers() {
   async function getUserById(userId) {
 
  const { rows: [user] } = await client.query(
-      `SELECT * FROM users 
+      `SELECT id, username, name, location, active 
+      FROM users
       WHERE "id"=${ userId };
     `);
     if (!user){
@@ -154,7 +194,8 @@ async function getAllUsers() {
     updatePost,
     getAllPosts,
     getPostsByUser,
-    getUserById
+    getUserById, 
+    createTags,
   }
 
   
