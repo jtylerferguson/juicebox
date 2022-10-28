@@ -6,7 +6,11 @@ const {
   getUserById, 
   createPost,
   getAllPosts,
-  updatePost
+  updatePost,
+  createPostTag,
+  addTagsToPost,
+  getPostById,
+  createTags
 } = require('./index');
 
 async function createInitialUsers() {
@@ -56,6 +60,31 @@ async function createInitialPosts() {
       console.log("Finished creating posts!");
     } catch (error) {
       console.log("Error creating posts!");
+      throw error;
+    }
+  }
+
+  async function createInitialTags() {
+    try {
+      console.log("Starting to create tags...");
+  
+      const [happy, sad, inspo, catman] = await createTags([
+        '#happy',
+        '#worst-day-ever', 
+        '#youcandoanything',
+        '#catmandoeverything'
+      ]);
+      console.log("does it make it here?")
+  
+      const [postOne, postTwo, postThree] = await getAllPosts();
+  
+      await addTagsToPost(postOne.id, [happy, inspo]);
+      await addTagsToPost(postTwo.id, [sad, inspo]);
+      await addTagsToPost(postThree.id, [happy, catman, inspo]);
+  
+      console.log("Finished creating tags!");
+    } catch (error) {
+      console.log("Error creating tags!");
       throw error;
     }
   }
@@ -141,6 +170,7 @@ async function rebuildDB() {
     await createTables();
     await createInitialUsers();
     await createInitialPosts();
+    await createInitialTags();
   } catch (error) {
     console.log("error during rebuildDB")
     throw error;
