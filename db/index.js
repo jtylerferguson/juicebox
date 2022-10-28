@@ -27,6 +27,15 @@ async function getAllUsers() {
       throw error;
     }
   }
+
+  async function getAllTags() {
+    const { rows } = await client.query(
+      `SELECT *  
+      FROM tags;
+    `);
+  
+    return rows;
+  }
  
   async function getPostsByUser(userId) {
     try {
@@ -308,7 +317,8 @@ ON CONFLICT (name) DO NOTHING;
     createPostTag,
     addTagsToPost,
     getPostById,
-    getPostsByTagName
+    getPostsByTagName,
+    getAllTags
   }
 
   
