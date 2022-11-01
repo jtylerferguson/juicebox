@@ -1,22 +1,22 @@
-const express = require('express');
-const postsRouter = express.Router();
-const { getAllPosts, createPost, getPostById, updatePost} = require('../db');
-const { requireUser } = require('./utils');
+const express = require("express")
+const postsRouter = express.Router()
+const { getAllPosts, createPost, getPostById, updatePost} = require("../db")
+const { requireUser } = require("./utils")
 
-postsRouter.post('/', requireUser, async (req, res, next) => {
-  const { title, content, tags = ""} = req.body;
+
+postsRouter.post("/", requireUser, async (req, res, next) => {
+    const { title, content, tags = "" } = req.body
   console.log(req.user, "this is our user")
 
   const tagArr = tags.trim().split(/\s+/)
-  const postData = {authorId: req.user.id, title, content};
+    const postData = { authorId: req.user.id, title, content }
 
   // only send the tags if there are some to send
   if (tagArr.length) {
-    postData.tags = tagArr;
+        postData.tags = tagArr
   }
 
   try {
-
     // add authorId, title, content to postData object
     post = await createPost(postData)
     // const post = await createPost(postData);
@@ -25,8 +25,8 @@ postsRouter.post('/', requireUser, async (req, res, next) => {
     if (post) {
       res.send(post)
     }
-
   } catch ({ name, message }) {
+
     next({ name, message });
   }
 });
@@ -67,22 +67,26 @@ postsRouter.patch('/:postId', requireUser, async (req, res, next) => {
   });
 
 
+
 postsRouter.use((req, res, next) => {
-  console.log("A request is being made to /users");
+    console.log("A request is being made to /users")
 
-  next(); // THIS IS DIFFERENT
-});
-
+    next() // THIS IS DIFFERENT
+})
 
 
 
 // UPDATE
-postsRouter.get('/', async (req, res) => {
-  const posts = await getAllPosts();
+postsRouter.get("/", async (req, res) => {
+    const posts = await getAllPosts()
 
   res.send({
-    posts
-  });
-});
+        posts,
+    })
+})
+
+
+
+
 
 module.exports = postsRouter
