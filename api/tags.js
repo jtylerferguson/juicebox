@@ -7,7 +7,7 @@ tagsRouter.use((req, res, next) => {
   next(); // THIS IS DIFFERENT
 });
 
-const { getAllTags
+const { getAllTags, getPostsByTagName
 
 } = require('../db');
 
@@ -20,6 +20,22 @@ tagsRouter.get('/', async (req, res) => {
     tags
   });
 });
+
+tagsRouter.get('/:tagName/posts', async (req, res, next) => {
+    const { tagName } = req.params;
+    console.log(tagName)
+    // read the tagname from the params
+
+    try {
+        const posts = await getPostsByTagName(tagName)
+       if ([posts.id === tagName.id]){
+        res.send ({posts: posts })}
+      // use our method to get posts by tag name from the db
+      // send out an object to the client { posts: // the posts }
+    } catch ({ name, message }) {
+      // forward the name and message to the error handler
+    }
+  });
 
 
 module.exports = tagsRouter;

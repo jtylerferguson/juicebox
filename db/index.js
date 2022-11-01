@@ -199,7 +199,7 @@ ON CONFLICT (name) DO NOTHING;
         JOIN tags ON tags.id=post_tags."tagId"
         WHERE tags.name=$1;
       `, [tagName]);
-  
+  console.log (postIds)
       return await Promise.all(postIds.map(
         post => getPostById(post.id)
       ));
